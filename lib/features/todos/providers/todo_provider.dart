@@ -59,10 +59,38 @@ class TodoNotifier extends AsyncNotifier<List<Todo>> {
   }
 }
 
-final todoProvider =
-AsyncNotifierProvider<TodoNotifier, List<Todo>>(
-  TodoNotifier.new,
+final todoProvider = AsyncNotifierProvider<TodoNotifier, List<Todo>>(
+  TodoNotifier.new);
 
+class TodoFilterNotifier extends Notifier<TodoFilter> {
+  @override
+  TodoFilter build() {
+    return TodoFilter.all;
+  }
 
+  void setFilter(TodoFilter filter) {
+    state = filter;
+  }
+}
+
+final todoFilterProvider =
+NotifierProvider<TodoFilterNotifier, TodoFilter>(
+  TodoFilterNotifier.new,
 );
+
+final filteredTodosProvider = Provider<AsyncValue<List<Todo>>>((ref) {
+  final todosAsync = ref.watch(todoProvider);
+  final filter = ref.watch(todoFilterProvider);
+
+  return todosAsync.whenData((todos) {
+    switch (filter) {
+      case TodoFilter.active:
+        return todos.where((todo) => !todo.isDone).toList();
+      case TodoFilter.completed:
+        return todos.where((todo) => todo.isDone).toList();
+      case TodoFilter.all:
+        return todos;
+    }
+  });
+});
 
