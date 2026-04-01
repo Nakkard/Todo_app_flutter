@@ -20,4 +20,20 @@ class Todo {
       isDone: isDone ?? this.isDone,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'isDone': isDone,
+    };
+  }
+
+  factory Todo.fromJson(Map<String, dynamic> json) {
+    return Todo(
+      id: json['id'],
+      title: json['title'],
+      isDone: json['isDone'],
+    );
+  }
 }
