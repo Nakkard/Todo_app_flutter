@@ -15,21 +15,24 @@ class TodoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Checkbox(
-        value: todo.isDone,
-        onChanged: (_) => onToggle(),
-      ),
-      title: Text(
-        todo.title,
-        style: TextStyle(
-          decoration:
-          todo.isDone ? TextDecoration.lineThrough : null,
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      child: ListTile(
+        leading: Checkbox(
+          value: todo.isDone,
+          onChanged: (_) => onToggle(),
         ),
-      ),
-      trailing: IconButton(
-        onPressed: onDelete,
-        icon: const Icon(Icons.delete),
+        title: Text(
+          todo.title,
+          style: TextStyle(
+            decoration:
+            todo.isDone ? TextDecoration.lineThrough : null,
+          ),
+        ),
+        trailing: IconButton(
+          onPressed: onDelete,
+          icon: const Icon(Icons.delete),
+        ),
       ),
     );
   }

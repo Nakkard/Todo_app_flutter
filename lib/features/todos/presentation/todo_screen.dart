@@ -95,7 +95,14 @@ class TodoScreen extends ConsumerWidget {
                   data: (todos) {
                     if (todos.isEmpty) {
                       return const Center(
-                        child: Text('No todos found'),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.check_circle_outline, size: 64, color: Colors.grey),
+                            SizedBox(height: 16),
+                            Text('No todos yet'),
+                          ],
+                        ),
                       );
                     }
 
@@ -133,12 +140,13 @@ class TodoScreen extends ConsumerWidget {
             );
           }
 
-          return content;
+          return SafeArea(child: content);
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddTodoDialog(context, ref),
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: const Text('Add Todo'),
       ),
     );
   }
