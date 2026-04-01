@@ -1,59 +1,68 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/todo.dart';
 import '../data/todo_repository.dart';
+import '../models/todo_filter.dart';
 
 final todoRepositoryProvider = Provider<TodoRepository>(
       (ref) => TodoRepository(),
 );
 
-class TodoNotifier extends Notifier<List<Todo>> {
+class TodoNotifier extends AsyncNotifier<List<Todo>> {
   late final TodoRepository _repository;
 
   @override
-  List<Todo> build() {
+  Future<List<Todo>> build() async {
     _repository = ref.read(todoRepositoryProvider);
-    _loadTodos();
-    return [];
+    return _repository.loadTodos();
   }
 
-  Future<void> _loadTodos() async {
-    final todos = await _repository.loadTodos();
-    state = todos;
+  Future<void> _saveTodos(List<Todo> todos) async {
+    await _repository.saveTodos(todos);
   }
 
-  Future<void> _saveTodos() async {
-    await _repository.saveTodos(state);
-  }
+  Future<void> addTodo(String title) async {
+    final currentTodos = state.value ?? [];
 
-  void addTodo(String title) {
-    state = [
-      ...state,
+    final updatedTodos = [
+      ...currentTodos,
       Todo(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
       ),
     ];
-    _saveTodos();
+
+    state = AsyncData(updatedTodos);
+    await _saveTodos(updatedTodos);
   }
 
-  void toggleTodo(String id) {
-    state = state.map((todo) {
+  Future<void> toggleTodo(String id) async {
+    final currentTodos = state.value ?? [];
+
+    final updatedTodos = currentTodos.map((todo) {
       if (todo.id == id) {
         return todo.copyWith(isDone: !todo.isDone);
       }
       return todo;
     }).toList();
 
-    _saveTodos();
+    state = AsyncData(updatedTodos);
+    await _saveTodos(updatedTodos);
   }
 
-  void deleteTodo(String id) {
-    state = state.where((t) => t.id != id).toList();
-    _saveTodos();
+  Future<void> deleteTodo(String id) async {
+    final currentTodos = state.value ?? [];
+
+    final updatedTodos = currentTodos.where((t) => t.id != id).toList();
+
+    state = AsyncData(updatedTodos);
+    await _saveTodos(updatedTodos);
   }
 }
 
 final todoProvider =
-NotifierProvider<TodoNotifier, List<Todo>>(
+AsyncNotifierProvider<TodoNotifier, List<Todo>>(
   TodoNotifier.new,
+
+
 );
+
