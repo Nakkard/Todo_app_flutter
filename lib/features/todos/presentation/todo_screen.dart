@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/todo_provider.dart';
 import 'widgets/todo_item.dart';
 import '../models/todo_filter.dart';
+import 'widgets/todo_details.dart';
 
 class TodoScreen extends ConsumerWidget {
   const TodoScreen({super.key});
@@ -45,10 +46,6 @@ class TodoScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todosAsync = ref.watch(filteredTodosProvider);
-    final selectedFilter = ref.watch(todoFilterProvider);
-    final notifier = ref.read(todoProvider.notifier);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Todo App'),
@@ -59,95 +56,99 @@ class TodoScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isWide = constraints.maxWidth >= 700;
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth >= 700;
 
-          final content = Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: SegmentedButton<TodoFilter>(
-                  segments: const [
-                    ButtonSegment(
-                      value: TodoFilter.all,
-                      label: Text('All'),
-                    ),
-                    ButtonSegment(
-                      value: TodoFilter.active,
-                      label: Text('Active'),
-                    ),
-                    ButtonSegment(
-                      value: TodoFilter.completed,
-                      label: Text('Completed'),
-                    ),
-                  ],
-                  selected: {selectedFilter},
-                  onSelectionChanged: (selection) {
-                    ref
-                        .read(todoFilterProvider.notifier)
-                        .setFilter(selection.first);
-                  },
+            final todosAsync = ref.watch(filteredTodosProvider);
+            final selectedTodo = ref.watch(selectedTodoProvider);
+            final notifier = ref.read(todoProvider.notifier);
+
+            final selectedFilter = ref.watch(todoFilterProvider);
+
+            Widget list = Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: SegmentedButton<TodoFilter>(
+                    segments: const [
+                      ButtonSegment(
+                        value: TodoFilter.all,
+                        label: Text('All'),
+                      ),
+                      ButtonSegment(
+                        value: TodoFilter.active,
+                        label: Text('Active'),
+                      ),
+                      ButtonSegment(
+                        value: TodoFilter.completed,
+                        label: Text('Completed'),
+                      ),
+                    ],
+                    selected: {selectedFilter},
+                    onSelectionChanged: (selection) {
+                      ref
+                          .read(todoFilterProvider.notifier)
+                          .setFilter(selection.first);
+                    },
+                  ),
                 ),
-              ),
-              Expanded(
-                child: todosAsync.when(
-                  data: (todos) {
-                    if (todos.isEmpty) {
-                      return const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.check_circle_outline, size: 64, color: Colors.grey),
-                            SizedBox(height: 16),
-                            Text('No todos yet'),
-                          ],
-                        ),
+                Expanded(
+                  child: todosAsync.when(
+                    data: (todos) {
+                      if (todos.isEmpty) {
+                        return const Center(child: Text('No todos'));
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: todos.length,
+                        itemBuilder: (context, index) {
+                          final todo = todos[index];
+
+                          return TodoItem(
+                            todo: todo,
+                            onToggle: () => notifier.toggleTodo(todo.id),
+                            onDelete: () => notifier.deleteTodo(todo.id),
+                            onTap: () {
+                              ref
+                                  .read(selectedTodoProvider.notifier)
+                                  .select(todo);
+                            },
+                          );
+                        },
                       );
-                    }
-
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      itemCount: todos.length,
-                      itemBuilder: (context, index) {
-                        final todo = todos[index];
-
-                        return TodoItem(
-                          todo: todo,
-                          onToggle: () => notifier.toggleTodo(todo.id),
-                          onDelete: () => notifier.deleteTodo(todo.id),
-                        );
-                      },
-                    );
-                  },
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  error: (error, stackTrace) => Center(
-                    child: Text('Error: $error'),
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (e, _) => Center(child: Text('Error: $e')),
                   ),
                 ),
-              ),
-            ],
-          );
+              ],
+            );
 
-          if (isWide) {
-            return Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 700),
-                child: content,
-              ),
+            if (!isWide) {
+              return list;
+            }
+
+            return Row(
+              children: [
+                Expanded(flex: 2, child: list),
+                const VerticalDivider(width: 1),
+                Expanded(
+                  flex: 3,
+                  child: selectedTodo == null
+                      ? const Center(child: Text('Select a todo'))
+                      : TodoDetails(todo: selectedTodo),
+                ),
+              ],
             );
           }
-
-          return SafeArea(child: content);
-        },
-      ),
+          ,
+        ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddTodoDialog(context, ref),
         icon: const Icon(Icons.add),
         label: const Text('Add Todo'),
-      ),
-    );
+      ),);
   }
 }

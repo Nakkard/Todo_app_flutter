@@ -94,3 +94,19 @@ final filteredTodosProvider = Provider<AsyncValue<List<Todo>>>((ref) {
   });
 });
 
+class SelectedTodoNotifier extends Notifier<Todo?> {
+  @override
+  Todo? build() {
+    return null;
+  }
+
+  void select(Todo? todo) {
+    state = todo;
+  }
+}
+
+final selectedTodoProvider =
+NotifierProvider<SelectedTodoNotifier, Todo?>(
+  SelectedTodoNotifier.new,
+);
+
