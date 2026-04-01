@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../models/todo.dart';
+import 'widgets/todo_item.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
@@ -101,26 +102,10 @@ class _TodoScreenState extends State<TodoScreen> {
         itemBuilder: (context, index) {
           final todo = _todos[index];
 
-          return ListTile(
-            leading: Checkbox(
-              value: todo.isDone,
-              onChanged: (_) {
-                _toggleTodo(todo.id);
-              },
-            ),
-            title: Text(
-              todo.title,
-              style: TextStyle(
-                decoration:
-                todo.isDone ? TextDecoration.lineThrough : null,
-              ),
-            ),
-            trailing: IconButton(
-              onPressed: () {
-                _deleteTodo(todo.id);
-              },
-              icon: const Icon(Icons.delete),
-            ),
+          return TodoItem(
+            todo: todo,
+            onToggle: () => _toggleTodo(todo.id),
+            onDelete: () => _deleteTodo(todo.id),
           );
         },
       ),
