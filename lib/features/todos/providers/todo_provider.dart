@@ -1,38 +1,28 @@
-import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/todo.dart';
+import '../data/todo_repository.dart';
+
+final todoRepositoryProvider = Provider<TodoRepository>(
+      (ref) => TodoRepository(),
+);
 
 class TodoNotifier extends Notifier<List<Todo>> {
-  static const _storageKey = 'todos';
+  late final TodoRepository _repository;
 
   @override
   List<Todo> build() {
+    _repository = ref.read(todoRepositoryProvider);
     _loadTodos();
     return [];
   }
 
   Future<void> _loadTodos() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_storageKey);
-
-    if (jsonString != null) {
-      final List decoded = jsonDecode(jsonString);
-
-      state = decoded
-          .map((e) => Todo.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
+    final todos = await _repository.loadTodos();
+    state = todos;
   }
 
   Future<void> _saveTodos() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final jsonString = jsonEncode(
-      state.map((e) => e.toJson()).toList(),
-    );
-
-    await prefs.setString(_storageKey, jsonString);
+    await _repository.saveTodos(state);
   }
 
   void addTodo(String title) {
@@ -53,6 +43,7 @@ class TodoNotifier extends Notifier<List<Todo>> {
       }
       return todo;
     }).toList();
+
     _saveTodos();
   }
 
