@@ -1,44 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../models/todo.dart';
+import '../providers/todo_provider.dart';
 import 'widgets/todo_item.dart';
 
-class TodoScreen extends StatefulWidget {
+class TodoScreen extends ConsumerWidget {
   const TodoScreen({super.key});
 
-  @override
-  State<TodoScreen> createState() => _TodoScreenState();
-}
-
-class _TodoScreenState extends State<TodoScreen> {
-  final List<Todo> _todos = [];
-
-  void _addTodo(String title) {
-    setState(() {
-      _todos.add(
-        Todo(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: title,
-        ),
-      );
-    });
-  }
-
-  void _toggleTodo(String id) {
-    setState(() {
-      final todo = _todos.firstWhere((t) => t.id == id);
-      todo.isDone = !todo.isDone;
-    });
-  }
-
-  void _deleteTodo(String id) {
-    setState(() {
-      _todos.removeWhere((t) => t.id == id);
-    });
-  }
-
-  void _showAddTodoDialog() {
-    String input = '';
+  void _showAddTodoDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
 
     showDialog(
       context: context,
@@ -46,29 +16,19 @@ class _TodoScreenState extends State<TodoScreen> {
         return AlertDialog(
           title: const Text('Add Todo'),
           content: TextField(
-            autofocus: true,
-            decoration: const InputDecoration(
-              hintText: 'Enter todo title',
-            ),
-            onChanged: (value) {
-              input = value;
-            },
+            controller: controller,
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
-                final trimmed = input.trim();
-
-                if (trimmed.isNotEmpty) {
-                  _addTodo(trimmed);
+                final trimmedText = controller.text.trim();
+                if (trimmedText.isNotEmpty) {
+                  ref.read(todoProvider.notifier).addTodo(trimmedText);
                 }
-
                 Navigator.pop(context);
               },
               child: const Text('Add'),
@@ -80,37 +40,37 @@ class _TodoScreenState extends State<TodoScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final todos = ref.watch(todoProvider);
+    final notifier = ref.read(todoProvider.notifier);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Todo App'),
         actions: [
           IconButton(
-            onPressed: () {
-              context.go('/settings');
-            },
+            onPressed: () => context.go('/settings'),
             icon: const Icon(Icons.settings),
           ),
         ],
       ),
-      body: _todos.isEmpty
-          ? const Center(
-        child: Text('No todos yet'),
-      )
+      body: todos.isEmpty
+          ? const Center(child: Text('No todos yet'))
           : ListView.builder(
-        itemCount: _todos.length,
+        padding: const EdgeInsets.all(8),
+        itemCount: todos.length,
         itemBuilder: (context, index) {
-          final todo = _todos[index];
+          final todo = todos[index];
 
           return TodoItem(
             todo: todo,
-            onToggle: () => _toggleTodo(todo.id),
-            onDelete: () => _deleteTodo(todo.id),
+            onToggle: () => notifier.toggleTodo(todo.id),
+            onDelete: () => notifier.deleteTodo(todo.id),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddTodoDialog,
+        onPressed: () => _showAddTodoDialog(context, ref),
         child: const Icon(Icons.add),
       ),
     );
