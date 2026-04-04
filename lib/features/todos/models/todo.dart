@@ -31,9 +31,9 @@ class Todo {
 
   factory Todo.fromJson(Map<String, dynamic> json) {
     return Todo(
-      id: json['id'],
-      title: json['title'],
-      isDone: json['isDone'],
+      id: json['id'] as String,
+      title: json['title'] as String,
+      isDone: json['isDone'] as bool? ?? false,
     );
   }
 }

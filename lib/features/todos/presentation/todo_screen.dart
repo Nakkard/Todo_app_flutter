@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../models/todo.dart';
 import '../providers/todo_provider.dart';
 import 'widgets/todo_item.dart';
 import '../models/todo_filter.dart';
 import 'widgets/todo_details.dart';
+import '../../../core/router/app_routes.dart';
 
 class TodoScreen extends ConsumerWidget {
   const TodoScreen({super.key});
@@ -51,7 +53,7 @@ class TodoScreen extends ConsumerWidget {
         title: const Text('Todo App'),
         actions: [
           IconButton(
-            onPressed: () => context.go('/settings'),
+            onPressed: () => context.go(AppRoutes.settings),
             icon: const Icon(Icons.settings),
           ),
         ],
@@ -61,8 +63,21 @@ class TodoScreen extends ConsumerWidget {
             final isWide = constraints.maxWidth >= 700;
 
             final todosAsync = ref.watch(filteredTodosProvider);
-            final selectedTodo = ref.watch(selectedTodoProvider);
+            final selectedTodoId = ref.watch(selectedTodoIdProvider);
             final notifier = ref.read(todoProvider.notifier);
+
+            Todo? selectedTodo;
+
+            todosAsync.when(
+              data: (todos) {
+                final matches =
+                todos.where((t) => t.id == selectedTodoId).toList();
+
+                selectedTodo = matches.isNotEmpty ? matches.first : null;
+              },
+              loading: () {},
+              error: (_, __) {},
+            );
 
             final selectedFilter = ref.watch(todoFilterProvider);
 
@@ -109,11 +124,17 @@ class TodoScreen extends ConsumerWidget {
                           return TodoItem(
                             todo: todo,
                             onToggle: () => notifier.toggleTodo(todo.id),
-                            onDelete: () => notifier.deleteTodo(todo.id),
+                            onDelete: () async {
+                              await notifier.deleteTodo(todo.id);
+
+                              if (selectedTodoId == todo.id) {
+                                ref.read(selectedTodoIdProvider.notifier).clear();
+                              }
+                            },
                             onTap: () {
                               ref
-                                  .read(selectedTodoProvider.notifier)
-                                  .select(todo);
+                                  .read(selectedTodoIdProvider.notifier)
+                                  .select(todo.id);
                             },
                           );
                         },
@@ -138,7 +159,7 @@ class TodoScreen extends ConsumerWidget {
                   flex: 3,
                   child: selectedTodo == null
                       ? const Center(child: Text('Select a todo'))
-                      : TodoDetails(todo: selectedTodo),
+                      : TodoDetails(todo: selectedTodo!),
                 ),
               ],
             );

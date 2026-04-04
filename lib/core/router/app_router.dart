@@ -1,16 +1,17 @@
 import 'package:go_router/go_router.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/todos/presentation/todo_screen.dart';
+import 'app_routes.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/todos',
+    initialLocation: AppRoutes.todos,
   routes: [
     GoRoute(
-      path: '/todos',
+      path: AppRoutes.todos,
       builder: (context, state) => const TodoScreen(),
     ),
     GoRoute(
-      path: '/settings',
+      path: AppRoutes.settings,
       builder: (context, state) => const SettingsScreen(),
     ),
   ],
