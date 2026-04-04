@@ -6,26 +6,54 @@ import '../providers/todo_provider.dart';
 import 'widgets/todo_editor_dialog.dart';
 
 class TodoDetailsScreen extends ConsumerWidget {
-  final Todo todo;
+  final String todoId;
 
-  const TodoDetailsScreen({super.key, required this.todo});
+  const TodoDetailsScreen({super.key, required this.todoId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final todosAsync = ref.watch(todoProvider);
+    Todo? todo;
+
+    todosAsync.when(
+      data: (todos) {
+        final matches = todos.where((t) => t.id == todoId).toList();
+        todo = matches.isNotEmpty ? matches.first : null;
+      },
+      loading: () {},
+      error: (_, __) {},
+    );
+
   return Scaffold(
       appBar: AppBar(
         title: const Text('Todo Details'),
       ),
-      body: TodoDetails(
-        todo: todo,
-        onEdit: () {
-          _showEditDialog(context, ref);
-        },
+    body: todosAsync.when(
+      data: (_) {
+        if (todo == null) {
+          return const Center(
+            child: Text('Todo not found'),
+          );
+        }
+
+        return TodoDetails(
+          todo: todo!,
+          onEdit: () {
+            _showEditDialog(context, ref, todo!);
+          },
+        );
+      },
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
       ),
+      error: (error, _) => Center(
+        child: Text('Error: $error'),
+      ),
+    ),
     );
   }
 
-  void _showEditDialog(BuildContext context, WidgetRef ref) {
+  void _showEditDialog(BuildContext context, WidgetRef ref, Todo todo) {
     showDialog(
       context: context,
       builder: (context) {

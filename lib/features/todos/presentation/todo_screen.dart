@@ -131,7 +131,7 @@ class TodoScreen extends ConsumerWidget {
 
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => TodoDetailsScreen(todo: todo),
+                                  builder: (_) => TodoDetailsScreen(todoId: todo.id),
                                 ),
                               );
                             },
