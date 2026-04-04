@@ -8,40 +8,31 @@ import '../models/todo_filter.dart';
 import 'widgets/todo_details.dart';
 import '../../../core/router/app_routes.dart';
 import 'todo_details_screen.dart';
+import 'widgets/todo_editor_dialog.dart';
 
 class TodoScreen extends ConsumerWidget {
   const TodoScreen({super.key});
 
-  void _showAddTodoDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
-
+  void _showTodoDialog(
+      BuildContext context,
+      WidgetRef ref, {
+        String? initialText,
+        String? todoId,
+      }) {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Add Todo'),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final text = controller.text.trim();
-
-                if (text.isNotEmpty) {
-                  await ref.read(todoProvider.notifier).addTodo(text);
-                }
-
-                Navigator.pop(context);
-              },
-              child: const Text('Add'),
-            ),
-          ],
+        return TodoEditorDialog(
+          title: todoId == null ? 'Add Todo' : 'Edit Todo',
+          actionText: todoId == null ? 'Add' : 'Save',
+          initialText: initialText,
+          onSubmit: (text) async {
+            if (todoId == null) {
+              await ref.read(todoProvider.notifier).addTodo(text);
+            } else {
+              await ref.read(todoProvider.notifier).updateTodo(todoId, text);
+            }
+          },
         );
       },
     );
@@ -167,7 +158,17 @@ class TodoScreen extends ConsumerWidget {
                   flex: 3,
                   child: selectedTodo == null
                       ? const Center(child: Text('Select a todo'))
-                      : TodoDetails(todo: selectedTodo!),
+                      : TodoDetails(
+                    todo: selectedTodo!,
+                    onEdit: () {
+                      _showTodoDialog(
+                        context,
+                        ref,
+                        initialText: selectedTodo!.title,
+                        todoId: selectedTodo!.id,
+                      );
+                    },
+                  ),
                 ),
               ],
             );
@@ -175,7 +176,7 @@ class TodoScreen extends ConsumerWidget {
           ,
         ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddTodoDialog(context, ref),
+        onPressed: () => _showTodoDialog(context, ref),
         icon: const Icon(Icons.add),
         label: const Text('Add Todo'),
       ),);
