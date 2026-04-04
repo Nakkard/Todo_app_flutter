@@ -7,6 +7,7 @@ import 'widgets/todo_item.dart';
 import '../models/todo_filter.dart';
 import 'widgets/todo_details.dart';
 import '../../../core/router/app_routes.dart';
+import 'todo_details_screen.dart';
 
 class TodoScreen extends ConsumerWidget {
   const TodoScreen({super.key});
@@ -132,9 +133,16 @@ class TodoScreen extends ConsumerWidget {
                               }
                             },
                             onTap: () {
-                              ref
-                                  .read(selectedTodoIdProvider.notifier)
-                                  .select(todo.id);
+                              if (isWide) {
+                                ref.read(selectedTodoIdProvider.notifier).select(todo.id);
+                                return;
+                              }
+
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => TodoDetailsScreen(todo: todo),
+                                ),
+                              );
                             },
                           );
                         },
