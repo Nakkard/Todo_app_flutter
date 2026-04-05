@@ -71,6 +71,18 @@ class TodoNotifier extends AsyncNotifier<List<Todo>> {
     state = AsyncData(updatedTodos);
     await _saveTodos(updatedTodos);
   }
+
+  Future<void> restoreTodo(Todo todo) async {
+    final currentTodos = state.value ?? [];
+
+    final updatedTodos = [
+      todo,
+      ...currentTodos,
+    ];
+
+    state = AsyncData(updatedTodos);
+    await _saveTodos(updatedTodos);
+  }
 }
 
 final todoProvider = AsyncNotifierProvider<TodoNotifier, List<Todo>>(

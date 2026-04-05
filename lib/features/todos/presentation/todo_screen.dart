@@ -13,31 +13,6 @@ import 'widgets/todo_editor_dialog.dart';
 class TodoScreen extends ConsumerWidget {
   const TodoScreen({super.key});
 
-  void _showTodoDialog(
-      BuildContext context,
-      WidgetRef ref, {
-        String? initialText,
-        String? todoId,
-      }) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return TodoEditorDialog(
-          title: todoId == null ? 'Add Todo' : 'Edit Todo',
-          actionText: todoId == null ? 'Add' : 'Save',
-          initialText: initialText,
-          onSubmit: (text) async {
-            if (todoId == null) {
-              await ref.read(todoProvider.notifier).addTodo(text);
-            } else {
-              await ref.read(todoProvider.notifier).updateTodo(todoId, text);
-            }
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
@@ -45,7 +20,7 @@ class TodoScreen extends ConsumerWidget {
         title: const Text('Todo App'),
         actions: [
           IconButton(
-            onPressed: () => context.go(AppRoutes.settings),
+            onPressed: () => context.push(AppRoutes.settings),
             icon: const Icon(Icons.settings),
           ),
         ],
@@ -122,6 +97,8 @@ class TodoScreen extends ConsumerWidget {
                               if (selectedTodoId == todo.id) {
                                 ref.read(selectedTodoIdProvider.notifier).clear();
                               }
+
+                              _showUndoDeleteSnackBar(context, ref, todo);
                             },
                             onTap: () {
                               if (isWide) {
@@ -180,5 +157,50 @@ class TodoScreen extends ConsumerWidget {
         icon: const Icon(Icons.add),
         label: const Text('Add Todo'),
       ),);
+  }
+
+  void _showTodoDialog(
+      BuildContext context,
+      WidgetRef ref, {
+        String? initialText,
+        String? todoId,
+      }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return TodoEditorDialog(
+          title: todoId == null ? 'Add Todo' : 'Edit Todo',
+          actionText: todoId == null ? 'Add' : 'Save',
+          initialText: initialText,
+          onSubmit: (text) async {
+            if (todoId == null) {
+              await ref.read(todoProvider.notifier).addTodo(text);
+            } else {
+              await ref.read(todoProvider.notifier).updateTodo(todoId, text);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  void _showUndoDeleteSnackBar(
+      BuildContext context,
+      WidgetRef ref,
+      Todo deletedTodo,
+      ) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('"${deletedTodo.title}" deleted'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            ref.read(todoProvider.notifier).restoreTodo(deletedTodo);
+          },
+        ),
+      ),
+    );
   }
 }
