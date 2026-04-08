@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:todo_app/features/todos/presentation/widgets/todo_mobile_layout.dart';
+import 'package:todo_app/features/todos/presentation/widgets/todo_tablet_layout.dart';
+import '../../../core/ui/adaptive.dart';
 import '../models/todo.dart';
 import '../providers/todo_provider.dart';
 import 'widgets/todo_item.dart';
 import '../models/todo_filter.dart';
-import 'widgets/todo_details.dart';
 import '../../../core/router/app_routes.dart';
 import 'todo_details_screen.dart';
 import 'widgets/todo_editor_dialog.dart';
@@ -27,7 +29,8 @@ class TodoScreen extends ConsumerWidget {
       ),
         body: LayoutBuilder(
           builder: (context, constraints) {
-            final isWide = constraints.maxWidth >= 700;
+            final screenType = getScreenType(constraints.maxWidth);
+            final isWide = screenType != ScreenType.mobile;
 
             final todosAsync = ref.watch(filteredTodosProvider);
             final selectedTodoId = ref.watch(selectedTodoIdProvider);
@@ -95,20 +98,25 @@ class TodoScreen extends ConsumerWidget {
                               await notifier.deleteTodo(todo.id);
 
                               if (selectedTodoId == todo.id) {
-                                ref.read(selectedTodoIdProvider.notifier).clear();
+                                ref
+                                    .read(selectedTodoIdProvider.notifier)
+                                    .clear();
                               }
 
                               _showUndoDeleteSnackBar(context, ref, todo);
                             },
                             onTap: () {
                               if (isWide) {
-                                ref.read(selectedTodoIdProvider.notifier).select(todo.id);
+                                ref
+                                    .read(selectedTodoIdProvider.notifier)
+                                    .select(todo.id);
                                 return;
                               }
 
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => TodoDetailsScreen(todoId: todo.id),
+                                  builder: (_) =>
+                                      TodoDetailsScreen(todoId: todo.id),
                                 ),
                               );
                             },
@@ -116,41 +124,46 @@ class TodoScreen extends ConsumerWidget {
                         },
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                    const Center(child: CircularProgressIndicator()),
                     error: (e, _) => Center(child: Text('Error: $e')),
                   ),
                 ),
               ],
             );
 
-            if (!isWide) {
-              return list;
-            }
-
-            return Row(
-              children: [
-                Expanded(flex: 2, child: list),
-                const VerticalDivider(width: 1),
-                Expanded(
-                  flex: 3,
-                  child: selectedTodo == null
-                      ? const Center(child: Text('Select a todo'))
-                      : TodoDetails(
-                    todo: selectedTodo!,
-                    onEdit: () {
-                      _showTodoDialog(
-                        context,
-                        ref,
-                        initialText: selectedTodo!.title,
-                        todoId: selectedTodo!.id,
-                      );
-                    },
-                  ),
-                ),
-              ],
-            );
+            return switch (screenType) {
+              ScreenType.mobile => TodoMobileLayout(list: list),
+              ScreenType.tablet => TodoTabletLayout(
+                list: list,
+                selectedTodo: selectedTodo,
+                onEdit: selectedTodo == null
+                    ? null
+                    : () {
+                  _showTodoDialog(
+                    context,
+                    ref,
+                    initialText: selectedTodo!.title,
+                    todoId: selectedTodo!.id,
+                  );
+                },
+              ),
+              ScreenType.desktop => TodoTabletLayout(
+                list: list,
+                selectedTodo: selectedTodo,
+                onEdit: selectedTodo == null
+                    ? null
+                    : () {
+                  _showTodoDialog(
+                    context,
+                    ref,
+                    initialText: selectedTodo!.title,
+                    todoId: selectedTodo!.id,
+                  );
+                },
+              ),
+            };
           }
-          ,
         ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showTodoDialog(context, ref),

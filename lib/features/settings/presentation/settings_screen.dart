@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/theme_mode_provider.dart';
 import '../models/app_theme_mode.dart';
+import '../providers/location_permission_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -10,6 +11,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeModeAsync = ref.watch(themeModeProvider);
     final selectedMode = themeModeAsync.value ?? AppThemeMode.system;
+    final permissionStatus = ref.watch(locationPermissionProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -23,7 +25,7 @@ class SettingsScreen extends ConsumerWidget {
               ref.read(themeModeProvider.notifier).setThemeMode(value!);
             },
             child: ListView(
-              children: const [
+              children: [
                 ListTile(
                   title: Text('Theme mode'),
                 ),
@@ -38,6 +40,36 @@ class SettingsScreen extends ConsumerWidget {
                 RadioListTile<AppThemeMode>(
                   title: Text('Dark'),
                   value: AppThemeMode.dark,
+                ),
+                Divider(),
+
+                ListTile(
+                  title: Text('Location permission'),
+                ),
+
+                ListTile(
+                  title: const Text('Current status'),
+                  subtitle: Text(permissionStatus.name),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: FilledButton(
+                    onPressed: () {
+                      ref.read(locationPermissionProvider.notifier).checkPermission();
+                    },
+                    child: const Text('Check location permission'),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: OutlinedButton(
+                    onPressed: () {
+                      ref.read(locationPermissionProvider.notifier).requestPermission();
+                    },
+                    child: const Text('Request location permission'),
+                  ),
                 ),
               ],
             ),
