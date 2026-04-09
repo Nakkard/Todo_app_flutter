@@ -83,6 +83,20 @@ class TodoNotifier extends AsyncNotifier<List<Todo>> {
     state = AsyncData(updatedTodos);
     await _saveTodos(updatedTodos);
   }
+
+  Future<void> updateTodoImage(String id, String imagePath) async {
+    final currentTodos = state.value ?? [];
+
+    final updatedTodos = currentTodos.map((todo) {
+      if (todo.id == id) {
+        return todo.copyWith(imagePath: imagePath);
+      }
+      return todo;
+    }).toList();
+
+    state = AsyncData(updatedTodos);
+    await _saveTodos(updatedTodos);
+  }
 }
 
 final todoProvider = AsyncNotifierProvider<TodoNotifier, List<Todo>>(

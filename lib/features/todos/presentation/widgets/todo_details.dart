@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/todo.dart';
+import 'dart:io';
 
 class TodoDetails extends StatelessWidget {
   final Todo todo;
@@ -30,6 +31,17 @@ class TodoDetails extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
+                if (todo.imagePath != null) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(
+                      File(todo.imagePath!),
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
                 FilledButton(
                   onPressed: onEdit,
                   child: const Text('Edit'),
