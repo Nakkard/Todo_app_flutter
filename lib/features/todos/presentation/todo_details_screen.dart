@@ -45,6 +45,9 @@ class TodoDetailsScreen extends ConsumerWidget {
                 onEdit: () {
                   _showEditDialog(context, ref, todo!);
                 },
+                onImagePicked: (path) async {
+                  await ref.read(todoProvider.notifier).updateTodoImage(todo!.id, path);
+                },
               ),
             ),
             Padding(

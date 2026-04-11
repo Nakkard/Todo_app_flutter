@@ -147,6 +147,13 @@ class TodoScreen extends ConsumerWidget {
                     todoId: selectedTodo!.id,
                   );
                 },
+                onImagePicked: selectedTodo == null
+                    ? null
+                    : (path) async {
+                  await ref
+                      .read(todoProvider.notifier)
+                      .updateTodoImage(selectedTodo!.id, path);
+                },
               ),
               ScreenType.desktop => TodoTabletLayout(
                 list: list,

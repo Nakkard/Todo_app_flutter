@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../models/todo.dart';
 import 'dart:io';
+import 'todo_image_picker_button.dart';
+import 'package:flutter/foundation.dart';
 
 class TodoDetails extends StatelessWidget {
   final Todo todo;
   final VoidCallback onEdit;
+  final ValueChanged<String> onImagePicked;
 
   const TodoDetails({
     super.key,
     required this.todo,
     required this.onEdit,
+    required this.onImagePicked,
   });
 
   @override
@@ -32,9 +36,20 @@ class TodoDetails extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 if (todo.imagePath != null) ...[
+                  Builder(
+                    builder: (context) {
+                      return const SizedBox.shrink();
+                    },
+                  ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
+                    child: kIsWeb
+                        ? Image.network(
+                      todo.imagePath!,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    )
+                        : Image.file(
                       File(todo.imagePath!),
                       height: 200,
                       fit: BoxFit.cover,
@@ -45,6 +60,10 @@ class TodoDetails extends StatelessWidget {
                 FilledButton(
                   onPressed: onEdit,
                   child: const Text('Edit'),
+                ),
+                const SizedBox(height: 12),
+                TodoImagePickerButton(
+                  onImagePicked: onImagePicked,
                 ),
               ],
             ),

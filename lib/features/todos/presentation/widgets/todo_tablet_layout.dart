@@ -6,12 +6,14 @@ class TodoTabletLayout extends StatelessWidget {
   final Widget list;
   final Todo? selectedTodo;
   final VoidCallback? onEdit;
+  final ValueChanged<String>? onImagePicked;
 
   const TodoTabletLayout({
     super.key,
     required this.list,
     required this.selectedTodo,
     this.onEdit,
+    this.onImagePicked,
   });
 
   @override
@@ -27,6 +29,7 @@ class TodoTabletLayout extends StatelessWidget {
               : TodoDetails(
             todo: selectedTodo!,
             onEdit: onEdit ?? () {},
+            onImagePicked: onImagePicked ?? (_) {},
           ),
         ),
       ],
