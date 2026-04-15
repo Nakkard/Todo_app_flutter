@@ -30,6 +30,8 @@
 	<string>This app uses location permission for learning native integrations.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>This app uses the photo library to attach images to todos.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>This app uses the camera to attach images to todos.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

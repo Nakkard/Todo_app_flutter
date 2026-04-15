@@ -4,7 +4,6 @@ import 'widgets/todo_details.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/todo_provider.dart';
 import 'widgets/todo_editor_dialog.dart';
-import 'widgets/todo_image_picker_button.dart';
 
 class TodoDetailsScreen extends ConsumerWidget {
   final String todoId;
@@ -37,28 +36,14 @@ class TodoDetailsScreen extends ConsumerWidget {
           );
         }
 
-        return Column(
-          children: [
-            Expanded(
-              child: TodoDetails(
-                todo: todo!,
-                onEdit: () {
-                  _showEditDialog(context, ref, todo!);
-                },
-                onImagePicked: (path) async {
-                  await ref.read(todoProvider.notifier).updateTodoImage(todo!.id, path);
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: TodoImagePickerButton(
-                onImagePicked: (path) async {
-                  await ref.read(todoProvider.notifier).updateTodoImage(todo!.id, path);
-                },
-              ),
-            ),
-          ],
+        return TodoDetails(
+          todo: todo!,
+          onEdit: () {
+            _showEditDialog(context, ref, todo!);
+          },
+          onImagePicked: (path) async {
+            await ref.read(todoProvider.notifier).updateTodoImage(todo!.id, path);
+          },
         );
       },
       loading: () => const Center(
