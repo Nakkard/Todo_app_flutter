@@ -1,8 +1,4 @@
-enum ScreenType {
-  mobile,
-  tablet,
-  desktop,
-}
+enum ScreenType { mobile, tablet, desktop }
 
 ScreenType getScreenType(double width) {
   if (width < 600) return ScreenType.mobile;

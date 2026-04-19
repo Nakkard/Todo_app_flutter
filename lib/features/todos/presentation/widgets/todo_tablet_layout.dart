@@ -27,10 +27,10 @@ class TodoTabletLayout extends StatelessWidget {
           child: selectedTodo == null
               ? const Center(child: Text('Select a todo'))
               : TodoDetails(
-            todo: selectedTodo!,
-            onEdit: onEdit ?? () {},
-            onImagePicked: onImagePicked ?? (_) {},
-          ),
+                  todo: selectedTodo!,
+                  onEdit: onEdit ?? () {},
+                  onImagePicked: onImagePicked ?? (_) {},
+                ),
         ),
       ],
     );

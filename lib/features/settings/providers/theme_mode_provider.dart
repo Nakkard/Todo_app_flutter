@@ -4,7 +4,7 @@ import '../data/settings_repository.dart';
 import '../models/app_theme_mode.dart';
 
 final settingsRepositoryProvider = Provider<SettingsRepository>(
-      (ref) => SettingsRepository(),
+  (ref) => SettingsRepository(),
 );
 
 class ThemeModeNotifier extends AsyncNotifier<AppThemeMode> {
@@ -23,9 +23,9 @@ class ThemeModeNotifier extends AsyncNotifier<AppThemeMode> {
 }
 
 final themeModeProvider =
-AsyncNotifierProvider<ThemeModeNotifier, AppThemeMode>(
-  ThemeModeNotifier.new,
-);
+    AsyncNotifierProvider<ThemeModeNotifier, AppThemeMode>(
+      ThemeModeNotifier.new,
+    );
 
 ThemeMode mapAppThemeModeToFlutter(AppThemeMode mode) {
   switch (mode) {

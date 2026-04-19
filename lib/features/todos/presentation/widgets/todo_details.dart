@@ -45,26 +45,21 @@ class TodoDetails extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: kIsWeb
                         ? Image.network(
-                      todo.imagePath!,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    )
+                            todo.imagePath!,
+                            height: 200,
+                            fit: BoxFit.cover,
+                          )
                         : Image.file(
-                      File(todo.imagePath!),
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
+                            File(todo.imagePath!),
+                            height: 200,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                   const SizedBox(height: 24),
                 ],
-                FilledButton(
-                  onPressed: onEdit,
-                  child: const Text('Edit'),
-                ),
+                FilledButton(onPressed: onEdit, child: const Text('Edit')),
                 const SizedBox(height: 12),
-                TodoImagePickerButton(
-                  onImagePicked: onImagePicked,
-                ),
+                TodoImagePickerButton(onImagePicked: onImagePicked),
               ],
             ),
           ),

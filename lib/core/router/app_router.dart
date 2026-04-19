@@ -4,7 +4,7 @@ import '../../features/todos/presentation/todo_screen.dart';
 import 'app_routes.dart';
 
 final GoRouter appRouter = GoRouter(
-    initialLocation: AppRoutes.todos,
+  initialLocation: AppRoutes.todos,
   routes: [
     GoRoute(
       path: AppRoutes.todos,

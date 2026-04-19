@@ -4,10 +4,7 @@ import 'package:image_picker/image_picker.dart';
 class TodoImagePickerButton extends StatelessWidget {
   final ValueChanged<String> onImagePicked;
 
-  const TodoImagePickerButton({
-    super.key,
-    required this.onImagePicked,
-  });
+  const TodoImagePickerButton({super.key, required this.onImagePicked});
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();

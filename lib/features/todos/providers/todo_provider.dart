@@ -4,7 +4,7 @@ import '../data/todo_repository.dart';
 import '../models/todo_filter.dart';
 
 final todoRepositoryProvider = Provider<TodoRepository>(
-      (ref) => TodoRepository(),
+  (ref) => TodoRepository(),
 );
 
 class TodoNotifier extends AsyncNotifier<List<Todo>> {
@@ -16,23 +16,16 @@ class TodoNotifier extends AsyncNotifier<List<Todo>> {
     return _repository.loadTodos();
   }
 
-  Future<void> _saveTodos(List<Todo> todos) async {
-    await _repository.saveTodos(todos);
-  }
-
   Future<void> addTodo(String title) async {
     final currentTodos = state.value ?? [];
 
     final updatedTodos = [
       ...currentTodos,
-      Todo(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: title,
-      ),
+      Todo(id: DateTime.now().millisecondsSinceEpoch.toString(), title: title),
     ];
 
     state = AsyncData(updatedTodos);
-    await _saveTodos(updatedTodos);
+    await _repository.saveTodos(updatedTodos);
   }
 
   Future<void> toggleTodo(String id) async {
@@ -46,7 +39,7 @@ class TodoNotifier extends AsyncNotifier<List<Todo>> {
     }).toList();
 
     state = AsyncData(updatedTodos);
-    await _saveTodos(updatedTodos);
+    await _repository.saveTodos(updatedTodos);
   }
 
   Future<void> deleteTodo(String id) async {
@@ -55,7 +48,7 @@ class TodoNotifier extends AsyncNotifier<List<Todo>> {
     final updatedTodos = currentTodos.where((t) => t.id != id).toList();
 
     state = AsyncData(updatedTodos);
-    await _saveTodos(updatedTodos);
+    await _repository.saveTodos(updatedTodos);
   }
 
   Future<void> updateTodo(String id, String newTitle) async {
@@ -69,19 +62,16 @@ class TodoNotifier extends AsyncNotifier<List<Todo>> {
     }).toList();
 
     state = AsyncData(updatedTodos);
-    await _saveTodos(updatedTodos);
+    await _repository.saveTodos(updatedTodos);
   }
 
   Future<void> restoreTodo(Todo todo) async {
     final currentTodos = state.value ?? [];
 
-    final updatedTodos = [
-      todo,
-      ...currentTodos,
-    ];
+    final updatedTodos = [todo, ...currentTodos];
 
     state = AsyncData(updatedTodos);
-    await _saveTodos(updatedTodos);
+    await _repository.saveTodos(updatedTodos);
   }
 
   Future<void> updateTodoImage(String id, String imagePath) async {
@@ -95,12 +85,13 @@ class TodoNotifier extends AsyncNotifier<List<Todo>> {
     }).toList();
 
     state = AsyncData(updatedTodos);
-    await _saveTodos(updatedTodos);
+    await _repository.saveTodos(updatedTodos);
   }
 }
 
 final todoProvider = AsyncNotifierProvider<TodoNotifier, List<Todo>>(
-  TodoNotifier.new);
+  TodoNotifier.new,
+);
 
 class TodoFilterNotifier extends Notifier<TodoFilter> {
   @override
@@ -113,8 +104,7 @@ class TodoFilterNotifier extends Notifier<TodoFilter> {
   }
 }
 
-final todoFilterProvider =
-NotifierProvider<TodoFilterNotifier, TodoFilter>(
+final todoFilterProvider = NotifierProvider<TodoFilterNotifier, TodoFilter>(
   TodoFilterNotifier.new,
 );
 
@@ -150,7 +140,6 @@ class SelectedTodoIdNotifier extends Notifier<String?> {
 }
 
 final selectedTodoIdProvider =
-NotifierProvider<SelectedTodoIdNotifier, String?>(
-  SelectedTodoIdNotifier.new,
-);
-
+    NotifierProvider<SelectedTodoIdNotifier, String?>(
+      SelectedTodoIdNotifier.new,
+    );

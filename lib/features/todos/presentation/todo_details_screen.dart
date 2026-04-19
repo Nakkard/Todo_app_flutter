@@ -24,35 +24,29 @@ class TodoDetailsScreen extends ConsumerWidget {
       error: (_, __) {},
     );
 
-  return Scaffold(
-      appBar: AppBar(
-        title: const Text('Todo Details'),
-      ),
-    body: todosAsync.when(
-      data: (_) {
-        if (todo == null) {
-          return const Center(
-            child: Text('Todo not found'),
-          );
-        }
+    return Scaffold(
+      appBar: AppBar(title: const Text('Todo Details')),
+      body: todosAsync.when(
+        data: (_) {
+          if (todo == null) {
+            return const Center(child: Text('Todo not found'));
+          }
 
-        return TodoDetails(
-          todo: todo!,
-          onEdit: () {
-            _showEditDialog(context, ref, todo!);
-          },
-          onImagePicked: (path) async {
-            await ref.read(todoProvider.notifier).updateTodoImage(todo!.id, path);
-          },
-        );
-      },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
+          return TodoDetails(
+            todo: todo!,
+            onEdit: () {
+              _showEditDialog(context, ref, todo!);
+            },
+            onImagePicked: (path) async {
+              await ref
+                  .read(todoProvider.notifier)
+                  .updateTodoImage(todo!.id, path);
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(child: Text('Error: $error')),
       ),
-      error: (error, _) => Center(
-        child: Text('Error: $error'),
-      ),
-    ),
     );
   }
 

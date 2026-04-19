@@ -14,9 +14,7 @@ class SettingsScreen extends ConsumerWidget {
     final permissionStatus = ref.watch(locationPermissionProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+      appBar: AppBar(title: const Text('Settings')),
       body: themeModeAsync.when(
         data: (_) {
           return RadioGroup<AppThemeMode>(
@@ -26,9 +24,7 @@ class SettingsScreen extends ConsumerWidget {
             },
             child: ListView(
               children: [
-                ListTile(
-                  title: Text('Theme mode'),
-                ),
+                ListTile(title: Text('Theme mode')),
                 RadioListTile<AppThemeMode>(
                   title: Text('System'),
                   value: AppThemeMode.system,
@@ -43,9 +39,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 Divider(),
 
-                ListTile(
-                  title: Text('Location permission'),
-                ),
+                ListTile(title: Text('Location permission')),
 
                 ListTile(
                   title: const Text('Current status'),
@@ -53,20 +47,30 @@ class SettingsScreen extends ConsumerWidget {
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: FilledButton(
                     onPressed: () {
-                      ref.read(locationPermissionProvider.notifier).checkPermission();
+                      ref
+                          .read(locationPermissionProvider.notifier)
+                          .checkPermission();
                     },
                     child: const Text('Check location permission'),
                   ),
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: OutlinedButton(
                     onPressed: () {
-                      ref.read(locationPermissionProvider.notifier).requestPermission();
+                      ref
+                          .read(locationPermissionProvider.notifier)
+                          .requestPermission();
                     },
                     child: const Text('Request location permission'),
                   ),
@@ -75,12 +79,8 @@ class SettingsScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (error, _) => Center(
-          child: Text('Error: $error'),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(child: Text('Error: $error')),
       ),
     );
   }

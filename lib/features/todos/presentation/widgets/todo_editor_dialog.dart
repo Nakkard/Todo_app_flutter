@@ -57,10 +57,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        ElevatedButton(
-          onPressed: _submit,
-          child: Text(widget.actionText),
-        ),
+        ElevatedButton(onPressed: _submit, child: Text(widget.actionText)),
       ],
     );
   }

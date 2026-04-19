@@ -11,12 +11,7 @@ class Todo {
     this.imagePath,
   });
 
-  Todo copyWith({
-    String? id,
-    String? title,
-    bool? isDone,
-    String? imagePath,
-  }) {
+  Todo copyWith({String? id, String? title, bool? isDone, String? imagePath}) {
     return Todo(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -26,12 +21,7 @@ class Todo {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'isDone': isDone,
-      'imagePath': imagePath,
-    };
+    return {'id': id, 'title': title, 'isDone': isDone, 'imagePath': imagePath};
   }
 
   factory Todo.fromJson(Map<String, dynamic> json) {

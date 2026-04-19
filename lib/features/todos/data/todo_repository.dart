@@ -21,9 +21,7 @@ class TodoRepository {
   Future<void> saveTodos(List<Todo> todos) async {
     final prefs = await SharedPreferences.getInstance();
 
-    final jsonString = jsonEncode(
-      todos.map((e) => e.toJson()).toList(),
-    );
+    final jsonString = jsonEncode(todos.map((e) => e.toJson()).toList());
 
     await prefs.setString(_storageKey, jsonString);
   }

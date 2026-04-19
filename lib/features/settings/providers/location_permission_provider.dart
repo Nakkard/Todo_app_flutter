@@ -2,8 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../models/location_permission_status.dart';
 
-class LocationPermissionNotifier
-    extends Notifier<LocationPermissionStatus> {
+class LocationPermissionNotifier extends Notifier<LocationPermissionStatus> {
   @override
   LocationPermissionStatus build() {
     return LocationPermissionStatus.unknown;
@@ -41,6 +40,6 @@ class LocationPermissionNotifier
 }
 
 final locationPermissionProvider =
-NotifierProvider<LocationPermissionNotifier, LocationPermissionStatus>(
-  LocationPermissionNotifier.new,
-);
+    NotifierProvider<LocationPermissionNotifier, LocationPermissionStatus>(
+      LocationPermissionNotifier.new,
+    );

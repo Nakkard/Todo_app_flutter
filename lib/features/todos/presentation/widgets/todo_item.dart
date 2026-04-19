@@ -21,15 +21,11 @@ class TodoItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(
         onTap: onTap,
-        leading: Checkbox(
-          value: todo.isDone,
-          onChanged: (_) => onToggle(),
-        ),
+        leading: Checkbox(value: todo.isDone, onChanged: (_) => onToggle()),
         title: Text(
           todo.title,
           style: TextStyle(
-            decoration:
-            todo.isDone ? TextDecoration.lineThrough : null,
+            decoration: todo.isDone ? TextDecoration.lineThrough : null,
           ),
         ),
         trailing: IconButton(

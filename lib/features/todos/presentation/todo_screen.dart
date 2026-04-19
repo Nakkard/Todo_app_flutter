@@ -27,164 +27,161 @@ class TodoScreen extends ConsumerWidget {
           ),
         ],
       ),
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            final screenType = getScreenType(constraints.maxWidth);
-            final isWide = screenType != ScreenType.mobile;
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final screenType = getScreenType(constraints.maxWidth);
+          final isWide = screenType != ScreenType.mobile;
 
-            final todosAsync = ref.watch(filteredTodosProvider);
-            final selectedTodoId = ref.watch(selectedTodoIdProvider);
-            final notifier = ref.read(todoProvider.notifier);
+          final todosAsync = ref.watch(filteredTodosProvider);
+          final selectedTodoId = ref.watch(selectedTodoIdProvider);
+          final notifier = ref.read(todoProvider.notifier);
 
-            Todo? selectedTodo;
+          Todo? selectedTodo;
 
-            todosAsync.when(
-              data: (todos) {
-                final matches =
-                todos.where((t) => t.id == selectedTodoId).toList();
+          todosAsync.when(
+            data: (todos) {
+              final matches = todos
+                  .where((t) => t.id == selectedTodoId)
+                  .toList();
 
-                selectedTodo = matches.isNotEmpty ? matches.first : null;
-              },
-              loading: () {},
-              error: (_, __) {},
-            );
+              selectedTodo = matches.isNotEmpty ? matches.first : null;
+            },
+            loading: () {},
+            error: (_, __) {},
+          );
 
-            final selectedFilter = ref.watch(todoFilterProvider);
+          final selectedFilter = ref.watch(todoFilterProvider);
 
-            Widget list = Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: SegmentedButton<TodoFilter>(
-                    segments: const [
-                      ButtonSegment(
-                        value: TodoFilter.all,
-                        label: Text('All'),
-                      ),
-                      ButtonSegment(
-                        value: TodoFilter.active,
-                        label: Text('Active'),
-                      ),
-                      ButtonSegment(
-                        value: TodoFilter.completed,
-                        label: Text('Completed'),
-                      ),
-                    ],
-                    selected: {selectedFilter},
-                    onSelectionChanged: (selection) {
-                      ref
-                          .read(todoFilterProvider.notifier)
-                          .setFilter(selection.first);
-                    },
-                  ),
+          Widget list = Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: SegmentedButton<TodoFilter>(
+                  segments: const [
+                    ButtonSegment(value: TodoFilter.all, label: Text('All')),
+                    ButtonSegment(
+                      value: TodoFilter.active,
+                      label: Text('Active'),
+                    ),
+                    ButtonSegment(
+                      value: TodoFilter.completed,
+                      label: Text('Completed'),
+                    ),
+                  ],
+                  selected: {selectedFilter},
+                  onSelectionChanged: (selection) {
+                    ref
+                        .read(todoFilterProvider.notifier)
+                        .setFilter(selection.first);
+                  },
                 ),
-                Expanded(
-                  child: todosAsync.when(
-                    data: (todos) {
-                      if (todos.isEmpty) {
-                        return const Center(child: Text('No todos'));
-                      }
+              ),
+              Expanded(
+                child: todosAsync.when(
+                  data: (todos) {
+                    if (todos.isEmpty) {
+                      return const Center(child: Text('No todos'));
+                    }
 
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        itemCount: todos.length,
-                        itemBuilder: (context, index) {
-                          final todo = todos[index];
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: todos.length,
+                      itemBuilder: (context, index) {
+                        final todo = todos[index];
 
-                          return TodoItem(
-                            todo: todo,
-                            onToggle: () => notifier.toggleTodo(todo.id),
-                            onDelete: () async {
-                              await notifier.deleteTodo(todo.id);
+                        return TodoItem(
+                          todo: todo,
+                          onToggle: () => notifier.toggleTodo(todo.id),
+                          onDelete: () async {
+                            await notifier.deleteTodo(todo.id);
 
-                              if (selectedTodoId == todo.id) {
-                                ref
-                                    .read(selectedTodoIdProvider.notifier)
-                                    .clear();
-                              }
+                            if (selectedTodoId == todo.id) {
+                              ref.read(selectedTodoIdProvider.notifier).clear();
+                            }
 
-                              _showUndoDeleteSnackBar(context, ref, todo);
-                            },
-                            onTap: () {
-                              if (isWide) {
-                                ref
-                                    .read(selectedTodoIdProvider.notifier)
-                                    .select(todo.id);
-                                return;
-                              }
+                            _showUndoDeleteSnackBar(context, ref, todo);
+                          },
+                          onTap: () {
+                            if (isWide) {
+                              ref
+                                  .read(selectedTodoIdProvider.notifier)
+                                  .select(todo.id);
+                              return;
+                            }
 
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      TodoDetailsScreen(todoId: todo.id),
-                                ),
-                              );
-                            },
-                          );
-                        },
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    TodoDetailsScreen(todoId: todo.id),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (e, _) => Center(child: Text('Error: $e')),
+                ),
+              ),
+            ],
+          );
+
+          return switch (screenType) {
+            ScreenType.mobile => TodoMobileLayout(list: list),
+            ScreenType.tablet => TodoTabletLayout(
+              list: list,
+              selectedTodo: selectedTodo,
+              onEdit: selectedTodo == null
+                  ? null
+                  : () {
+                      _showTodoDialog(
+                        context,
+                        ref,
+                        initialText: selectedTodo!.title,
+                        todoId: selectedTodo!.id,
                       );
                     },
-                    loading: () =>
-                    const Center(child: CircularProgressIndicator()),
-                    error: (e, _) => Center(child: Text('Error: $e')),
-                  ),
-                ),
-              ],
-            );
-
-            return switch (screenType) {
-              ScreenType.mobile => TodoMobileLayout(list: list),
-              ScreenType.tablet => TodoTabletLayout(
-                list: list,
-                selectedTodo: selectedTodo,
-                onEdit: selectedTodo == null
-                    ? null
-                    : () {
-                  _showTodoDialog(
-                    context,
-                    ref,
-                    initialText: selectedTodo!.title,
-                    todoId: selectedTodo!.id,
-                  );
-                },
-                onImagePicked: selectedTodo == null
-                    ? null
-                    : (path) async {
-                  await ref
-                      .read(todoProvider.notifier)
-                      .updateTodoImage(selectedTodo!.id, path);
-                },
-              ),
-              ScreenType.desktop => TodoTabletLayout(
-                list: list,
-                selectedTodo: selectedTodo,
-                onEdit: selectedTodo == null
-                    ? null
-                    : () {
-                  _showTodoDialog(
-                    context,
-                    ref,
-                    initialText: selectedTodo!.title,
-                    todoId: selectedTodo!.id,
-                  );
-                },
-              ),
-            };
-          }
-        ),
+              onImagePicked: selectedTodo == null
+                  ? null
+                  : (path) async {
+                      await ref
+                          .read(todoProvider.notifier)
+                          .updateTodoImage(selectedTodo!.id, path);
+                    },
+            ),
+            ScreenType.desktop => TodoTabletLayout(
+              list: list,
+              selectedTodo: selectedTodo,
+              onEdit: selectedTodo == null
+                  ? null
+                  : () {
+                      _showTodoDialog(
+                        context,
+                        ref,
+                        initialText: selectedTodo!.title,
+                        todoId: selectedTodo!.id,
+                      );
+                    },
+            ),
+          };
+        },
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showTodoDialog(context, ref),
         icon: const Icon(Icons.add),
         label: const Text('Add Todo'),
-      ),);
+      ),
+    );
   }
 
   void _showTodoDialog(
-      BuildContext context,
-      WidgetRef ref, {
-        String? initialText,
-        String? todoId,
-      }) {
+    BuildContext context,
+    WidgetRef ref, {
+    String? initialText,
+    String? todoId,
+  }) {
     showDialog(
       context: context,
       builder: (context) {
@@ -205,10 +202,10 @@ class TodoScreen extends ConsumerWidget {
   }
 
   void _showUndoDeleteSnackBar(
-      BuildContext context,
-      WidgetRef ref,
-      Todo deletedTodo,
-      ) {
+    BuildContext context,
+    WidgetRef ref,
+    Todo deletedTodo,
+  ) {
     ScaffoldMessenger.of(context).clearSnackBars();
 
     ScaffoldMessenger.of(context).showSnackBar(
