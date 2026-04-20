@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../models/todo.dart';
 import 'widgets/todo_details.dart';
@@ -25,11 +26,11 @@ class TodoDetailsScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Todo Details')),
+      appBar: AppBar(title: Text('todo_details'.tr())),
       body: todosAsync.when(
         data: (_) {
           if (todo == null) {
-            return const Center(child: Text('Todo not found'));
+            return Center(child: Text('todo_not_found'.tr()));
           }
 
           return TodoDetails(
@@ -55,8 +56,8 @@ class TodoDetailsScreen extends ConsumerWidget {
       context: context,
       builder: (context) {
         return TodoEditorDialog(
-          title: 'Edit Todo',
-          actionText: 'Save',
+          title: 'edit_todo'.tr(),
+          actionText: 'save'.tr(),
           initialText: todo.title,
           onSubmit: (text) async {
             await ref.read(todoProvider.notifier).updateTodo(todo.id, text);

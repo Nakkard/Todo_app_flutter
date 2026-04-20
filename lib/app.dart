@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'core/router/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +29,9 @@ class MyApp extends ConsumerWidget {
       ),
       themeMode: mapAppThemeModeToFlutter(themeMode),
       routerConfig: appRouter,
+      locale: context.locale,
+      supportedLocales: context.supportedLocales,
+      localizationsDelegates: context.localizationDelegates,
     );
   }
 }

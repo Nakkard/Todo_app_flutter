@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/core/ui/adaptive_extension.dart';
 import '../../models/todo.dart';
 import 'dart:io';
 import 'todo_image_picker_button.dart';
@@ -19,12 +21,12 @@ class TodoDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.a),
       child: SizedBox(
         width: double.infinity,
         child: Card(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.a),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -34,15 +36,10 @@ class TodoDetails extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineMedium,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.a),
                 if (todo.imagePath != null) ...[
-                  Builder(
-                    builder: (context) {
-                      return const SizedBox.shrink();
-                    },
-                  ),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.a),
                     child: kIsWeb
                         ? Image.network(
                             todo.imagePath!,
@@ -55,10 +52,10 @@ class TodoDetails extends StatelessWidget {
                             fit: BoxFit.cover,
                           ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.a),
                 ],
-                FilledButton(onPressed: onEdit, child: const Text('Edit')),
-                const SizedBox(height: 12),
+                FilledButton(onPressed: onEdit, child: Text('edit'.tr())),
+                SizedBox(height: 12.a),
                 TodoImagePickerButton(onImagePicked: onImagePicked),
               ],
             ),

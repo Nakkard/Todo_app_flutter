@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/features/todos/presentation/widgets/todo_details.dart';
 import '../../models/todo.dart';
@@ -25,7 +26,7 @@ class TodoTabletLayout extends StatelessWidget {
         Expanded(
           flex: 3,
           child: selectedTodo == null
-              ? const Center(child: Text('Select a todo'))
+              ? Center(child: Text('select_todo'.tr()))
               : TodoDetails(
                   todo: selectedTodo!,
                   onEdit: onEdit ?? () {},

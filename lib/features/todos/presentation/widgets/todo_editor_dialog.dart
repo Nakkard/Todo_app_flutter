@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class TodoEditorDialog extends StatefulWidget {
@@ -55,7 +56,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(onPressed: _submit, child: Text(widget.actionText)),
       ],

@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:todo_app/core/ui/adaptive_extension.dart';
 import 'package:todo_app/features/todos/presentation/widgets/todo_mobile_layout.dart';
 import 'package:todo_app/features/todos/presentation/widgets/todo_tablet_layout.dart';
 import '../../../core/ui/adaptive.dart';
@@ -19,7 +21,7 @@ class TodoScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Todo App'),
+        title: Text(context.tr('todo_app')),
         actions: [
           IconButton(
             onPressed: () => context.push(AppRoutes.settings),
@@ -55,17 +57,20 @@ class TodoScreen extends ConsumerWidget {
           Widget list = Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8.a),
                 child: SegmentedButton<TodoFilter>(
-                  segments: const [
-                    ButtonSegment(value: TodoFilter.all, label: Text('All')),
+                  segments: [
+                    ButtonSegment(
+                      value: TodoFilter.all,
+                      label: Text(context.tr('all')),
+                    ),
                     ButtonSegment(
                       value: TodoFilter.active,
-                      label: Text('Active'),
+                      label: Text(context.tr('active')),
                     ),
                     ButtonSegment(
                       value: TodoFilter.completed,
-                      label: Text('Completed'),
+                      label: Text(context.tr('completed')),
                     ),
                   ],
                   selected: {selectedFilter},
@@ -80,11 +85,11 @@ class TodoScreen extends ConsumerWidget {
                 child: todosAsync.when(
                   data: (todos) {
                     if (todos.isEmpty) {
-                      return const Center(child: Text('No todos'));
+                      return Center(child: Text(context.tr('no_todos')));
                     }
 
                     return ListView.builder(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8.a),
                       itemCount: todos.length,
                       itemBuilder: (context, index) {
                         final todo = todos[index];
@@ -164,6 +169,13 @@ class TodoScreen extends ConsumerWidget {
                         todoId: selectedTodo!.id,
                       );
                     },
+              onImagePicked: selectedTodo == null
+                  ? null
+                  : (path) async {
+                      await ref
+                          .read(todoProvider.notifier)
+                          .updateTodoImage(selectedTodo!.id, path);
+                    },
             ),
           };
         },
@@ -171,7 +183,7 @@ class TodoScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showTodoDialog(context, ref),
         icon: const Icon(Icons.add),
-        label: const Text('Add Todo'),
+        label: Text(context.tr('add_todo')),
       ),
     );
   }
@@ -186,8 +198,8 @@ class TodoScreen extends ConsumerWidget {
       context: context,
       builder: (context) {
         return TodoEditorDialog(
-          title: todoId == null ? 'Add Todo' : 'Edit Todo',
-          actionText: todoId == null ? 'Add' : 'Save',
+          title: todoId == null ? 'add_todo'.tr() : 'edit_todo'.tr(),
+          actionText: todoId == null ? 'add_todo'.tr() : 'save'.tr(),
           initialText: initialText,
           onSubmit: (text) async {
             if (todoId == null) {
@@ -210,9 +222,9 @@ class TodoScreen extends ConsumerWidget {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('"${deletedTodo.title}" deleted'),
+        content: Text(tr('todo_deleted', args: [deletedTodo.title])),
         action: SnackBarAction(
-          label: 'Undo',
+          label: tr('undo'),
           onPressed: () {
             ref.read(todoProvider.notifier).restoreTodo(deletedTodo);
           },

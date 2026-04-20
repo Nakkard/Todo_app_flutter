@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/ui/adaptive_extension.dart';
 import '../../models/todo.dart';
 
 class TodoItem extends StatelessWidget {
@@ -18,7 +19,7 @@ class TodoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      margin: EdgeInsets.symmetric(vertical: 6.a),
       child: ListTile(
         onTap: onTap,
         leading: Checkbox(value: todo.isDone, onChanged: (_) => onToggle()),
