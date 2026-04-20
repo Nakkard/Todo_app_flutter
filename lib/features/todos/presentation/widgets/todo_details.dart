@@ -1,6 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/core/ui/adaptive_extension.dart';
+import '../../../../core/l10n/l10n.dart';
 import '../../models/todo.dart';
 import 'dart:io';
 import 'todo_image_picker_button.dart';
@@ -54,7 +54,7 @@ class TodoDetails extends StatelessWidget {
                   ),
                   SizedBox(height: 24.a),
                 ],
-                FilledButton(onPressed: onEdit, child: Text('edit'.tr())),
+                FilledButton(onPressed: onEdit, child: Text(L10n.edit)),
                 SizedBox(height: 12.a),
                 TodoImagePickerButton(onImagePicked: onImagePicked),
               ],

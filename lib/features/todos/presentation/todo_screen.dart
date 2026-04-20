@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:todo_app/core/ui/adaptive_extension.dart';
 import 'package:todo_app/features/todos/presentation/widgets/todo_mobile_layout.dart';
 import 'package:todo_app/features/todos/presentation/widgets/todo_tablet_layout.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/ui/adaptive.dart';
 import '../models/todo.dart';
 import '../providers/todo_provider.dart';
@@ -21,7 +22,7 @@ class TodoScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.tr('todo_app')),
+        title: Text(L10n.todoApp),
         actions: [
           IconButton(
             onPressed: () => context.push(AppRoutes.settings),
@@ -62,15 +63,15 @@ class TodoScreen extends ConsumerWidget {
                   segments: [
                     ButtonSegment(
                       value: TodoFilter.all,
-                      label: Text(context.tr('all')),
+                      label: Text(L10n.all),
                     ),
                     ButtonSegment(
                       value: TodoFilter.active,
-                      label: Text(context.tr('active')),
+                      label: Text(L10n.active),
                     ),
                     ButtonSegment(
                       value: TodoFilter.completed,
-                      label: Text(context.tr('completed')),
+                      label: Text(L10n.completed),
                     ),
                   ],
                   selected: {selectedFilter},
@@ -85,7 +86,7 @@ class TodoScreen extends ConsumerWidget {
                 child: todosAsync.when(
                   data: (todos) {
                     if (todos.isEmpty) {
-                      return Center(child: Text(context.tr('no_todos')));
+                      return Center(child: Text(L10n.noTodos));
                     }
 
                     return ListView.builder(
@@ -183,7 +184,7 @@ class TodoScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showTodoDialog(context, ref),
         icon: const Icon(Icons.add),
-        label: Text(context.tr('add_todo')),
+        label: Text(L10n.addTodo),
       ),
     );
   }
@@ -198,8 +199,8 @@ class TodoScreen extends ConsumerWidget {
       context: context,
       builder: (context) {
         return TodoEditorDialog(
-          title: todoId == null ? 'add_todo'.tr() : 'edit_todo'.tr(),
-          actionText: todoId == null ? 'add_todo'.tr() : 'save'.tr(),
+          title: todoId == null ? L10n.addTodo : L10n.editTodo,
+          actionText: todoId == null ? L10n.addTodo : L10n.save,
           initialText: initialText,
           onSubmit: (text) async {
             if (todoId == null) {

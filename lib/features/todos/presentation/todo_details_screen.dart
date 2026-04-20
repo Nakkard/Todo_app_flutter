@@ -1,5 +1,5 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import '../../../core/l10n/l10n.dart';
 import '../models/todo.dart';
 import 'widgets/todo_details.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,11 +26,11 @@ class TodoDetailsScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text('todo_details'.tr())),
+      appBar: AppBar(title: Text(L10n.todoDetails)),
       body: todosAsync.when(
         data: (_) {
           if (todo == null) {
-            return Center(child: Text('todo_not_found'.tr()));
+            return Center(child: Text(L10n.todoNotFound));
           }
 
           return TodoDetails(
@@ -56,8 +56,8 @@ class TodoDetailsScreen extends ConsumerWidget {
       context: context,
       builder: (context) {
         return TodoEditorDialog(
-          title: 'edit_todo'.tr(),
-          actionText: 'save'.tr(),
+          title: L10n.editTodo,
+          actionText: L10n.save,
           initialText: todo.title,
           onSubmit: (text) async {
             await ref.read(todoProvider.notifier).updateTodo(todo.id, text);

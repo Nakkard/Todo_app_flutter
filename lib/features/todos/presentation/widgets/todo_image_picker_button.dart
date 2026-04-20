@@ -1,6 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../../../core/l10n/l10n.dart';
 
 class TodoImagePickerButton extends StatelessWidget {
   final ValueChanged<String> onImagePicked;
@@ -25,7 +26,7 @@ class TodoImagePickerButton extends StatelessWidget {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: Text(context.tr('pick_from_gallery')),
+                title: Text(L10n.pickFromGallery),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.gallery);
@@ -33,7 +34,7 @@ class TodoImagePickerButton extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_camera),
-                title: Text(context.tr('take_photo')),
+                title: Text(L10n.takePhoto),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.camera);
@@ -51,7 +52,7 @@ class TodoImagePickerButton extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: () => _showSourcePicker(context),
       icon: const Icon(Icons.image),
-      label: Text(context.tr('attach_image')),
+      label: Text(L10n.attachImage),
     );
   }
 }
